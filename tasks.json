@@ -1,0 +1,8 @@
+{
+    "calculate-numbers": "guillotina_hive.tests.tasks.calculate_numbers",
+    "with-args": "guillotina_hive.tests.tasks.task_with_all_args",
+    "missing-task-func": "foobar",
+    "slow-task": "guillotina_hive.tests.tasks.slow_task",
+    "local-memory": "guillotina_hive.tests.tasks.local_memory",
+    "compute": "guillotina_hive.tests.tasks.compute"
+}

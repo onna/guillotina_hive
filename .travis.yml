@@ -1,0 +1,65 @@
+language: python
+python:
+- 3.6
+sudo: required
+services:
+- docker
+env:
+- CHANGE_MINIKUBE_NONE_USER=true
+install:
+- pip install -r requirements.txt
+- pip install -r test-requirements.txt
+- python setup.py develop
+before_script:
+- curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
+- chmod +x kubectl
+- sudo mv kubectl /usr/local/bin/
+- curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+- chmod +x minikube
+- sudo mv minikube /usr/local/bin/
+- sudo minikube start --vm-driver=none --kubernetes-version=v1.7.0 --extra-config=apiserver.Authentication.PasswordFile.BasicAuthFile=testing.csv
+- minikube update-context
+- kubectl config view
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+  until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
+  sleep 1; done
+- kubectl get pods
+- curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
+- tar -zxvf helm.tar.gz
+- chmod +x linux-amd64/helm
+- sudo mv linux-amd64/helm /usr/local/bin
+- curl -Lo nomad.tar.gz https://releases.hashicorp.com/nomad/0.7.1/nomad_0.7.1_linux_amd64.zip
+- unzip nomad.tar.gz
+- chmod +x nomad
+- sudo mv nomad /usr/local/bin
+- docker run -v /usr/local/bin:/hostbin munnerz/ubuntu-nsenter cp /nsenter /hostbin/nsenter
+- helm init
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+  until kubectl get deploy -n kube-system -o jsonpath="$JSONPATH" 2>&1 | grep -q "tiller-deploy:Available=True";
+  do sleep 1; done
+- sleep 20
+- kubectl get pods --namespace kube-system
+- helm version
+- helm install https://storage.googleapis.com/tf-on-k8s-dogfood-releases/latest/tf-job-operator-chart-latest.tgz
+  -n tf-job --wait --replace
+- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
+  until kubectl get deploy -o jsonpath="$JSONPATH" 2>&1 | grep -q "tf-job-operator:Available=True";
+  do sleep 1; done
+- sleep 10
+- kubectl get pods --all-namespaces
+- nomad agent -dev &
+script:
+- flake8 guillotina_hive
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
+after_success:
+- codecov
+- rm -rf *.egg-info
+deploy:
+  skip_cleanup: true
+  provider: pypi
+  user: ramon.nb
+  password:
+    secure: ZVWg5NCM/sAQpQuuQ79WSZSpS3KafIxjbNxuys979D+O/f4nM0a2G+uP2wowFH7LGXqNDeMc50qassZQecoKAB4nzC0QhPppnZBLsgZj77fDi0AEQ0vu4znWxWldmN2cYyRgTgA/XC3TX1esXIykPz3zPpimjEUspiTb1LqZwAA5TtV+8w2BRJWIF2EbbfkXGrit50Z/6BIXE/bNoFLq7fVHaQZUoUUi28jg36EsoIjzICJ6FBEiC0qYOiQZjDy9xW+nBhyYqEWDd75dV8FhVPrmrykxw8erLqkfgKqh3NKFasp9L+79i2l2hZkYqDocdjxidWG/0c2iw4Kn3eyMWmF9R5i/JU9qDsmNc6iGDrV/lniu5/p1JZ03gHJ9LG7ZTabbg+2dpELa5RMXUgACL/hcuco685spcBsjw9NdhzfOPdYeH8R26UneB7fGvR5eLe5cPYdgFC29q0+lQFoo+Ld7hdVqlLZOih4/ciDtdHRJkkqU3mg2NdjOD8ZTyMBbtuoi6d52ubkn5C6Dr0YGSGNXLFPiFASUgMikIf5Hu2hyUaXpTK8x2fDvLhLExYm2nN9xcowVmJ28vP5HWRLFvJwzePcS1ykdTaaU5dtkft4GS1/tEy18DBeYtI7vdhXQF4ahYfBAjHVzlVLrmW+fGfNmFly95AGtBfIAsNwh5wk=
+  on:
+    tags: true
+  distributions: sdist bdist_wheel

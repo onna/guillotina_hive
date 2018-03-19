@@ -1,0 +1,14 @@
+parts
+lib
+include
+*.egg-info
+eggs
+develop-eggs
+bin
+.eggs
+__pycache__
+.cache
+.idea
+/dist
+pip-selfcheck.json
+config-local.json

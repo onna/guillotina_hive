@@ -1,0 +1,3 @@
+guillotina>=2.4.0
+aioclustermanager>=0.1.1
+async_timeout
