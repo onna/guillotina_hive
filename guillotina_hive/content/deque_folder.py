@@ -1,10 +1,8 @@
 import logging
 
 from guillotina.content import Folder
-from guillotina.directives import write_permission
-from guillotina.interfaces import IFolder
 from guillotina.interfaces import IResource
-from guillotina.schema import Int
+
 from guillotina.utils import get_current_request
 
 GET_OLDEST_CHILDREN = """
@@ -17,13 +15,6 @@ GET_OLDEST_CHILDREN = """
 
 
 logger = logging.getLogger('guillotina_hive')
-
-
-class IDequeFolder(IFolder):
-    write_permission(username='hive.Manage')
-    max_len = Int(
-        title='Maximum length of the folder',
-        default=0)
 
 
 class DequeFolder(Folder):

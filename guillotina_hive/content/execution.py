@@ -1,31 +1,12 @@
-import json
 import logging
 
 from guillotina import app_settings
 from guillotina import configure
 from guillotina.content import Item
 from guillotina.interfaces import IAbsoluteURL
-from guillotina.interfaces import IItem
-from guillotina.schema import JSONField
-from guillotina.schema import TextLine
-
+from guillotina_hive.interfaces import IExecution
 
 logger = logging.getLogger('guillotina_hive')
-
-
-PARAMS_SCHEMA = json.dumps({
-    'type': 'object',
-    'properties': {}
-})
-
-
-class IExecution(IItem):
-
-    status = TextLine(title='Status information or error')
-
-    params = JSONField(
-        title='Params information about the execution',
-        schema=PARAMS_SCHEMA)
 
 
 @configure.contenttype(
