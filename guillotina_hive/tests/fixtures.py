@@ -70,7 +70,7 @@ async def hive_requester(guillotina):
 
 
 @pytest.fixture(scope='function')
-async def hive_requester_k8s(guillotina, k8s_config, local_hive_image, elasticsearch, loop):
+async def hive_requester_k8s(elasticsearch, k8s_config, local_hive_image, guillotina, loop):
     return HiveRequesterAsyncContextManager(guillotina, loop)
     # async with HiveRequesterAsyncContextManager(guillotina) as guillotina_ctx:
 

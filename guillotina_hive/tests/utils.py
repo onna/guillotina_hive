@@ -1,5 +1,6 @@
 import base64
 import json
+import asyncio
 from guillotina.component import get_utility
 from guillotina.interfaces import ICatalogUtility
 from guillotina.tests.utils import ContainerRequesterAsyncContextManager
