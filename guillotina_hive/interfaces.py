@@ -1,13 +1,13 @@
 import json
 
 from guillotina.async_util import IAsyncUtility
-from guillotina.interfaces import Interface
 from guillotina.directives import write_permission
 from guillotina.interfaces import IFolder
+from guillotina.interfaces import IItem
+from guillotina.interfaces import Interface
 from guillotina.schema import Int
 from guillotina.schema import JSONField
 from guillotina.schema import TextLine
-from guillotina.interfaces import IItem
 
 
 GENERIC_SCHEMA = json.dumps({

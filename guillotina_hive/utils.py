@@ -89,7 +89,7 @@ async def add_object_task(*args, **kwargs):
     await hive.add_task(task_info)
     return task_info
 
-    
+
 # def create_task_request(task):
 #     if task.request_url is None:
 #         request = get_mocked_request()
