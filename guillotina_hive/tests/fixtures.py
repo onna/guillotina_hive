@@ -40,6 +40,7 @@ def base_settings_configurator(settings):
 
 
 testing.configure_with(base_settings_configurator)
+
 logger = logging.getLogger('guillotina_hive')
 
 BUILDED_IMAGE = False
@@ -69,11 +70,13 @@ async def hive_requester(guillotina):
 
 
 @pytest.fixture(scope='function')
-async def hive_requester_k8s(guillotina, k8s_config, local_hive_image):
-    async with HiveRequesterAsyncContextManager(guillotina) as guillotina:
-        hive = get_utility(IHiveClientUtility)
-        await hive.cm.cleanup_jobs(hive.ns)
-        yield guillotina
+async def hive_requester_k8s(guillotina, k8s_config, local_hive_image, elasticsearch, loop):
+    return HiveRequesterAsyncContextManager(guillotina, loop)
+    # async with HiveRequesterAsyncContextManager(guillotina) as guillotina_ctx:
+
+    #     hive = get_utility(IHiveClientUtility)
+    #     await hive.cm.cleanup_jobs(hive.ns)
+    #     yield guillotina_ctx
 
 
 @pytest.fixture(scope='function')

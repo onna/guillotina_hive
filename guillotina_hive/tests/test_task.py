@@ -61,7 +61,7 @@ async def test_not_found_task_errors(dummy_request):
 
 async def test_not_found_task_name_errors(dummy_request):
     task = Task(data={
-        "name": "acalculate_numbers",
+        "name": "acalculatenumbers",
         "task_uri": "",
         "function": "",
         "args": {

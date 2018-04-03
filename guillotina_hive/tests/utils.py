@@ -1,11 +1,22 @@
 import base64
 import json
-
+from guillotina.component import get_utility
+from guillotina.interfaces import ICatalogUtility
 from guillotina.tests.utils import ContainerRequesterAsyncContextManager
 from guillotina_hive.utils import GuillotinaConfigJSONEncoder
 
 
 class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
+
+    def __init__(self, guillotina, loop):
+        super().__init__(guillotina)
+
+        # aioes caches loop, we need to continue to reset it
+        search = get_utility(ICatalogUtility)
+        search.loop = loop
+        if search._conn:
+            search._conn.close()
+        search._conn = None
 
     async def __aenter__(self):
         try:
@@ -22,6 +33,10 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
         assert status == 200
         return self.requester
 
+    async def __aexit__(self, *args):
+        for task in asyncio.Task.all_tasks():
+            task._log_destroy_pending = False
+        return await super().__aexit__(*args)
 
 async def reconfigure_db(hive, task):
     nodes = await hive.cm.get_nodes()
@@ -34,3 +49,5 @@ async def reconfigure_db(hive, task):
             cls=GuillotinaConfigJSONEncoder,
             ensure_ascii=False
         ).encode('utf-8')).decode('utf-8')
+
+
