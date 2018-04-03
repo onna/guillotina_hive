@@ -4,13 +4,17 @@ python:
 sudo: required
 services:
 - docker
+- postgresql
 env:
-- CHANGE_MINIKUBE_NONE_USER=true
+- CHANGE_MINIKUBE_NONE_USER=true DATABASE=postgres TEST_HIVE_IMAGE=test_hive
+addons:
+  postgresql: "9.6"
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
 - python setup.py develop
 before_script:
+- psql -c 'create database guillotina;' -U postgres
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
 - chmod +x kubectl
 - sudo mv kubectl /usr/local/bin/
@@ -51,7 +55,7 @@ before_script:
 - nomad agent -dev &
 script:
 - flake8 guillotina_hive
-- TEST_HIVE_IMAGE=test_hive py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
 after_success:
 - codecov
 - rm -rf *.egg-info
