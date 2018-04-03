@@ -44,8 +44,8 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
 async def reconfigure_db(hive, task):
     nodes = await hive.cm.get_nodes()
     db_config = json.loads(base64.b64decode(task.envs['DB_CONFIG']))
-    new_dsn = db_config[0]['db']['dsn'].replace('localhost', nodes[0].hostname)
-    db_config[0]['db']['dsn'] = new_dsn
+    new_dsn = db_config['db']['dsn'].replace('localhost', nodes[0].hostname)
+    db_config['db']['dsn'] = new_dsn
     task._envs['DB_CONFIG'] = base64.b64encode(
         json.dumps(
             db_config,
