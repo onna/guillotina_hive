@@ -3,10 +3,7 @@ python:
 - 3.6
 sudo: required
 services:
-- postgresql
 - docker
-addons:
-  postgresql: "9.6"
 env:
 - CHANGE_MINIKUBE_NONE_USER=true
 install:
@@ -14,7 +11,6 @@ install:
 - pip install -r test-requirements.txt
 - python setup.py develop
 before_script:
-- psql -c 'create database guillotina;' -U postgres
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
 - chmod +x kubectl
 - sudo mv kubectl /usr/local/bin/

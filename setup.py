@@ -41,7 +41,6 @@ setup(
             'pytest',
             'docker',
             'backoff',
-            'psycopg2',
             'pytest-asyncio',
             'pytest-aiohttp',
             'pytest-cov'
