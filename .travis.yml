@@ -6,7 +6,7 @@ services:
 - docker
 - postgresql
 env:
-- CHANGE_MINIKUBE_NONE_USER=true DATABASE=postgres TEST_HIVE_IMAGE=test_hive
+- CHANGE_MINIKUBE_NONE_USER=true DATABASE=postgres TEST_HIVE_IMAGE=hive_test_image
 addons:
   postgresql: "9.6"
 install:
@@ -51,7 +51,7 @@ before_script:
   do sleep 1; done
 - sleep 10
 - kubectl get pods --all-namespaces
-- docker build -t test_hive .
+- docker build -t hive_test_image .
 - nomad agent -dev &
 script:
 - flake8 guillotina_hive
