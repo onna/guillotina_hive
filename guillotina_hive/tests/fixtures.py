@@ -54,6 +54,7 @@ def local_hive_image():
             docker_client = docker.from_env(version='1.23')
             docker_client.images.build(
                 path='/'.join(os.path.realpath(__file__).split('/')[:-3]),
+                pull=True,
                 tag=IMAGE_NAME
             )
         BUILDED_IMAGE = True

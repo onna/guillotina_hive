@@ -47,10 +47,11 @@ before_script:
   do sleep 1; done
 - sleep 10
 - kubectl get pods --all-namespaces
+- docker build -t test_hive .
 - nomad agent -dev &
 script:
 - flake8 guillotina_hive
-- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
+- TEST_HIVE_IMAGE=test_hive py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
 after_success:
 - codecov
 - rm -rf *.egg-info
