@@ -1,6 +1,7 @@
+import asyncio
 import base64
 import json
-import asyncio
+
 from guillotina.component import get_utility
 from guillotina.interfaces import ICatalogUtility
 from guillotina.tests.utils import ContainerRequesterAsyncContextManager
@@ -39,6 +40,7 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
             task._log_destroy_pending = False
         return await super().__aexit__(*args)
 
+
 async def reconfigure_db(hive, task):
     nodes = await hive.cm.get_nodes()
     db_config = json.loads(base64.b64decode(task.envs['DB_CONFIG']))
@@ -50,5 +52,3 @@ async def reconfigure_db(hive, task):
             cls=GuillotinaConfigJSONEncoder,
             ensure_ascii=False
         ).encode('utf-8')).decode('utf-8')
-
-

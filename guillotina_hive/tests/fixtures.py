@@ -65,8 +65,8 @@ def local_hive_image():
 
 
 @pytest.fixture(scope='function')
-async def hive_requester(guillotina):
-    return HiveRequesterAsyncContextManager(guillotina)
+async def hive_requester(elasticsearch, guillotina, loop):
+    return HiveRequesterAsyncContextManager(guillotina, loop)
 
 
 @pytest.fixture(scope='function')
