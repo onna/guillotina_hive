@@ -5,9 +5,10 @@ from aioclustermanager.tests.utils import get_k8s_config
 import docker
 from guillotina import testing
 from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
-
+from guillotina.tests.fixtures import IS_TRAVIS
 import pytest
 
+IS_TRAVIS = False
 IMAGE_NAME = 'hive_test_image'
 
 
