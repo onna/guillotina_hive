@@ -1,11 +1,5 @@
-FROM python:3.6.3-slim
-MAINTAINER Plone Community
-
-# Update packages
-RUN apt-get update -y
-
-# Install Python Setuptools
-RUN apt-get install -y locales git-core gcc g++ netcat libxml2-dev libxslt-dev libz-dev
+FROM python:3.6.3-onbuild
+MAINTAINER Guillotina Community
 
 RUN mkdir /app
 WORKDIR /app
