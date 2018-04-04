@@ -70,20 +70,5 @@ async def hive_requester(elasticsearch, guillotina, loop):
 
 
 @pytest.fixture(scope='function')
-async def hive_requester_k8s(elasticsearch, k8s_config, local_hive_image, guillotina, loop):
+async def hive_requester_k8s(k8s_config, elasticsearch, guillotina, local_hive_image, loop):
     return HiveRequesterAsyncContextManager(guillotina, loop)
-    # async with HiveRequesterAsyncContextManager(guillotina) as guillotina_ctx:
-
-    #     hive = get_utility(IHiveClientUtility)
-    #     await hive.cm.cleanup_jobs(hive.ns)
-    #     yield guillotina_ctx
-
-
-@pytest.fixture(scope='function')
-async def hive_requester_nomad(guillotina, nomad_config, local_hive_image):
-    hive = get_utility(IHiveClientUtility)
-    hive._cluster_environment = nomad_config
-    hive._image = local_hive_image
-    await hive.config()
-    await hive.cm.cleanup_jobs(hive.ns)
-    return HiveRequesterAsyncContextManager(guillotina)
