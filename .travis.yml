@@ -6,7 +6,9 @@ services:
 - docker
 - postgresql
 env:
-- CHANGE_MINIKUBE_NONE_USER=true DATABASE=postgres TEST_HIVE_IMAGE=test_hive
+- CHANGE_MINIKUBE_NONE_USER=true
+- DATABASE=postgres
+- TEST_HIVE_IMAGE=hive_test_image
 addons:
   postgresql: "9.6"
 install:
@@ -32,10 +34,6 @@ before_script:
 - tar -zxvf helm.tar.gz
 - chmod +x linux-amd64/helm
 - sudo mv linux-amd64/helm /usr/local/bin
-# - curl -Lo nomad.tar.gz https://releases.hashicorp.com/nomad/0.7.1/nomad_0.7.1_linux_amd64.zip
-# - unzip nomad.tar.gz
-# - chmod +x nomad
-# - sudo mv nomad /usr/local/bin
 - docker run -v /usr/local/bin:/hostbin munnerz/ubuntu-nsenter cp /nsenter /hostbin/nsenter
 - helm init
 - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
@@ -52,10 +50,9 @@ before_script:
 - sleep 10
 - kubectl get pods --all-namespaces
 - docker build -t hive_test_image .
-# - nomad agent -dev &
 script:
 - flake8 guillotina_hive
-- DATABASE=postgres TEST_HIVE_IMAGE=hive_test_image py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
 after_success:
 - codecov
 - rm -rf *.egg-info

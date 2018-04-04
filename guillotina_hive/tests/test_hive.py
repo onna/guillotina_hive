@@ -71,6 +71,9 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
         print(executions.statuses())
         log = await hive.get_task_log(task.name)
         print(log)
+        for execution in executions:
+            print('EXECUTION')
+            print(execution._raw)
         assert executions.is_done()
         assert '4.0000' in log
 
