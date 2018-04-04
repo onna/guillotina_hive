@@ -48,7 +48,7 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
     # persist with function
     async with hive_requester_k8s as requester:
         hive = get_utility(IHiveClientUtility)
-
+        await hive.cm.cleanup_jobs(hive.ns)
         task = Task(data={
             "name": "random-task",
             "function": "guillotina_hive.tests.tasks.calculate_numbers",
@@ -76,6 +76,7 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
     # Lets create a task from a guillotina client that is not persist
     async with hive_requester_k8s as requester:
         hive = get_utility(IHiveClientUtility)
+        await hive.cm.cleanup_jobs(hive.ns)
         task = Task(data={
             "name": "perl-task",
             "image": "perl",
@@ -99,6 +100,7 @@ async def test_add_task_nonhive_persist(hive_requester_k8s):
     # Lets create a task from a guillotina client that is not persist
     async with hive_requester_k8s as requester:
         hive = get_utility(IHiveClientUtility)
+        await hive.cm.cleanup_jobs(hive.ns)
         task = Task(data={
             "name": "perl-task",
             "image": "perl",
