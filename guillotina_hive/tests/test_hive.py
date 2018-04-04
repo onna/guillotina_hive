@@ -66,6 +66,12 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
         assert isinstance(job, Job)
         while job.finished is False:
             await asyncio.sleep(10)
+            try:
+                log = await hive.get_task_log(task.name)
+                print('NEW LOG')
+                print(log)
+            except:
+                pass
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
         print(executions.statuses())
