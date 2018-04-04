@@ -4,17 +4,13 @@ python:
 sudo: required
 services:
 - docker
-- postgresql
 env:
 - CHANGE_MINIKUBE_NONE_USER=true DATABASE=postgres TEST_HIVE_IMAGE=hive_test_image
-addons:
-  postgresql: "9.6"
 install:
 - pip install -r requirements.txt
 - pip install -r test-requirements.txt
 - python setup.py develop
 before_script:
-- psql -c 'create database guillotina;' -U postgres
 - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl
 - chmod +x kubectl
 - sudo mv kubectl /usr/local/bin/
@@ -27,8 +23,8 @@ before_script:
 - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
   until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
   sleep 1; done
-- ifconfig
-- netstat -apn
+- export MYIP = `ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`
+- echo $MYIP
 - kubectl get pods
 - curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
 - tar -zxvf helm.tar.gz
@@ -52,6 +48,7 @@ before_script:
 - docker build -t hive_test_image .
 script:
 - flake8 guillotina_hive
+- unset TRAVIS
 - py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
 after_success:
 - codecov
