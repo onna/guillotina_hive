@@ -4,7 +4,6 @@ from aioclustermanager.job import Job
 from guillotina.component import get_utility
 from guillotina_hive.interfaces import IHiveClientUtility
 from guillotina_hive.model.task import Task
-from guillotina_hive.tests.fixtures import IMAGE_NAME
 from guillotina_hive.tests.utils import reconfigure_db
 
 
@@ -19,7 +18,7 @@ async def test_install(hive_requester_k8s):
 
 async def test_add_task_hive_non_persist(hive_requester_k8s):
     # Lets create a task from a guillotina client that is not persist
-    async with hive_requester_k8s as requester:
+    async with hive_requester_k8s as requester:  # noqa
 
         hive = get_utility(IHiveClientUtility)
         await hive.cm.cleanup_jobs(hive.ns)
@@ -46,7 +45,7 @@ async def test_add_task_hive_non_persist(hive_requester_k8s):
 async def test_add_task_hive_function_non_persist(hive_requester_k8s):
     # Lets create a task from a guillotina client that is not
     # persist with function
-    async with hive_requester_k8s as requester:
+    async with hive_requester_k8s as requester:  # noqa
         hive = get_utility(IHiveClientUtility)
         await hive.cm.cleanup_jobs(hive.ns)
         task = Task(data={
@@ -67,6 +66,7 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
             await asyncio.sleep(10)
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
+        await asyncio.sleep(10)
         assert executions.is_done()
         log = await hive.get_task_log(task.name)
         assert '4.0000' in log
@@ -74,7 +74,7 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
 
 async def test_add_task_nonhive_non_persist(hive_requester_k8s):
     # Lets create a task from a guillotina client that is not persist
-    async with hive_requester_k8s as requester:
+    async with hive_requester_k8s as requester:  # noqa
         hive = get_utility(IHiveClientUtility)
         await hive.cm.cleanup_jobs(hive.ns)
         task = Task(data={
@@ -91,6 +91,7 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
             await asyncio.sleep(10)
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
+        await asyncio.sleep(10)
         assert executions.is_done()
         log = await hive.get_task_log(task.name)
         assert '3.14' in log
@@ -98,7 +99,7 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
 
 async def test_add_task_nonhive_persist(hive_requester_k8s):
     # Lets create a task from a guillotina client that is not persist
-    async with hive_requester_k8s as requester:
+    async with hive_requester_k8s as requester:  # noqa
         hive = get_utility(IHiveClientUtility)
         await hive.cm.cleanup_jobs(hive.ns)
         task = Task(data={
@@ -115,6 +116,7 @@ async def test_add_task_nonhive_persist(hive_requester_k8s):
             await asyncio.sleep(10)
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
+        await asyncio.sleep(10)
         assert executions.is_done()
         log = await hive.get_task_log(task.name)
         assert '3.14' in log

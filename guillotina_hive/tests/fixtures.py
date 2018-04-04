@@ -4,8 +4,6 @@ import os
 from aioclustermanager.tests.utils import get_k8s_config
 import docker
 from guillotina import testing
-from guillotina.component import get_utility
-from guillotina_hive.interfaces import IHiveClientUtility
 from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
 
 import pytest
