@@ -6,9 +6,7 @@ services:
 - docker
 - postgresql
 env:
-- CHANGE_MINIKUBE_NONE_USER=true
-- DATABASE=postgres
-- TEST_HIVE_IMAGE=hive_test_image
+- CHANGE_MINIKUBE_NONE_USER=true DATABASE=postgres TEST_HIVE_IMAGE=hive_test_image
 addons:
   postgresql: "9.6"
 install:
