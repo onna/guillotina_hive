@@ -49,6 +49,8 @@ async def reconfigure_db(hive, task):
     db_config = json.loads(base64.b64decode(task.envs['DB_CONFIG']))
     if not IS_TRAVIS:
         new_dsn = db_config['db']['dsn'].replace('localhost', nodes[0].hostname)
+    else:
+        new_dsn = db_config['db']['dsn']
     # else:
     #     new_dsn = db_config['db']['dsn'].replace('localhost', '10.0.2.2')
     db_config['db']['dsn'] = new_dsn
