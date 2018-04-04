@@ -55,7 +55,7 @@ before_script:
 - nomad agent -dev &
 script:
 - flake8 guillotina_hive
-- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_apply_recursive -s
 after_success:
 - codecov
 - rm -rf *.egg-info
