@@ -37,8 +37,10 @@ async def test_add_task_hive_non_persist(hive_requester_k8s):
             await asyncio.sleep(10)
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
-        assert executions.is_done()
+        print(executions.statuses())
         log = await hive.get_task_log(task.name)
+        print(log)
+        assert executions.is_done()
         assert '4.0000' in log
 
 
@@ -66,9 +68,10 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
             await asyncio.sleep(10)
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
-        await asyncio.sleep(10)
-        assert executions.is_done()
+        print(executions.statuses())
         log = await hive.get_task_log(task.name)
+        print(log)
+        assert executions.is_done()
         assert '4.0000' in log
 
 
@@ -91,8 +94,6 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
             await asyncio.sleep(10)
             job = await hive.get_task_status(task.name)
         executions = await hive.get_task_executions(task.name)
-        await asyncio.sleep(10)
-        print(executions.statuses())
         assert executions.is_done()
         log = await hive.get_task_log(task.name)
         assert '3.14' in log
