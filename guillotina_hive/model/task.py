@@ -86,7 +86,7 @@ class Task(object):
             else:
                 logger.warn('Running : ' + self.function)
                 func = resolve_dotted_name(self.function)
-        except ValueError:
+        except ModuleNotFoundError:
             raise NoTaskFunctionFoundError(self.name)
 
         logger.warning('Running task {}({})'.format(self.name, self.task_uri))
