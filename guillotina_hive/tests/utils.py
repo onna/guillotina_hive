@@ -1,11 +1,14 @@
 import asyncio
 import base64
 import json
+import os
 
 from guillotina.component import get_utility
 from guillotina.interfaces import ICatalogUtility
 from guillotina.tests.utils import ContainerRequesterAsyncContextManager
 from guillotina_hive.utils import GuillotinaConfigJSONEncoder
+
+IS_TRAVIS = 'TRAVIS' in os.environ
 
 
 class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
@@ -44,7 +47,10 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
 async def reconfigure_db(hive, task):
     nodes = await hive.cm.get_nodes()
     db_config = json.loads(base64.b64decode(task.envs['DB_CONFIG']))
-    new_dsn = db_config['db']['dsn'].replace('localhost', nodes[0].hostname)
+    if not IS_TRAVIS:
+        new_dsn = db_config['db']['dsn'].replace('localhost', nodes[0].hostname)
+    else:
+        new_dsn = db_config['db']['dsn'].replace('localhost', '10.0.2.2')
     db_config['db']['dsn'] = new_dsn
     task._envs['DB_CONFIG'] = base64.b64encode(
         json.dumps(
