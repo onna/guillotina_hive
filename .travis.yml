@@ -56,6 +56,11 @@ before_script:
 script:
 - flake8 guillotina_hive
 - py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_apply_recursive -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_dequeuefolder -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_es -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_task -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_hive -s
+- py.test --cov=guillotina_hive --cov-report=xml guillotina_hive -k test_worker -s
 after_success:
 - codecov
 - rm -rf *.egg-info
