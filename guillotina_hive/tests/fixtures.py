@@ -5,10 +5,9 @@ from aioclustermanager.tests.utils import get_k8s_config
 import docker
 from guillotina import testing
 from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
-from guillotina.tests.fixtures import IS_TRAVIS
+from guillotina.tests import fixtures
 import pytest
 
-IS_TRAVIS = False
 IMAGE_NAME = 'hive_test_image'
 
 
@@ -43,6 +42,44 @@ testing.configure_with(base_settings_configurator)
 logger = logging.getLogger('guillotina_hive')
 
 BUILDED_IMAGE = False
+
+
+def db():
+    """
+    detect travis, use travis's postgres; otherwise, use docker
+    """
+    if DATABASE == 'DUMMY':
+        yield
+    else:
+        import pytest_docker_fixtures
+        if DATABASE == 'cockroachdb':
+            host, port = pytest_docker_fixtures.cockroach_image.run()
+        else:
+            host, port = pytest_docker_fixtures.pg_image.run()
+            import psycopg2
+            try:
+                conn = psycopg2.connect(
+                    f"dbname=guillotina user=postgres host={host} "
+                    f"port={port}")
+                cur = conn.cursor()
+                cur.execute("CREATE DATABASE guillotina;")
+                cur.fetchone()
+                cur.close()
+                conn.close()
+            except:  # noqa
+                pass
+
+        # mark the function with the actual host
+        setattr(get_db_settings, 'host', host)
+        setattr(get_db_settings, 'port', port)
+
+        yield host, port  # provide the fixture value
+
+        if DATABASE == 'cockroachdb':
+            pytest_docker_fixtures.cockroach_image.stop()
+        elif not IS_TRAVIS:
+            pytest_docker_fixtures.pg_image.stop()
+fixtures.db = db
 
 
 @pytest.fixture(scope='function')
