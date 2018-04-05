@@ -67,7 +67,7 @@ def db():
             pg_image.base_image_options['publish_all_ports'] = False
             if 'MYIP' in os.environ:
                 myip = os.environ['MYIP']
-                pg_image.base_image_options['ports'] = {'5432/tcp': (myip, 5433)}
+                pg_image.base_image_options['ports'] = {'5432/tcp': 5433}
             else:
                 pg_image.base_image_options['ports'] = {'5432/tcp': 5433}
             host, port = pg_image.run()
