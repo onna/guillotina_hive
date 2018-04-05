@@ -43,7 +43,7 @@ logger = logging.getLogger('guillotina_hive')
 
 BUILDED_IMAGE = False
 
-
+@pytest.fixture(scope='session')
 def db():
     """
     detect travis, use travis's postgres; otherwise, use docker
@@ -79,6 +79,7 @@ def db():
             pytest_docker_fixtures.cockroach_image.stop()
         elif not IS_TRAVIS:
             pytest_docker_fixtures.pg_image.stop()
+
 fixtures.db = db
 
 
