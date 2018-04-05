@@ -46,7 +46,7 @@ before_script:
   do sleep 1; done
 - sleep 10
 - kubectl get pods --all-namespaces
-- export MYIP="$(ifconfig | grep eth0 -o2 | grep inet | cut -f 2 | cut -d " " -f 2)"
+- export MYIP="$(ifconfig eth0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1)"
 - echo $MYIP
 - docker build -t hive_test_image .
 script:
