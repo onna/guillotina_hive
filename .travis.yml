@@ -27,6 +27,7 @@ before_script:
   until kubectl get nodes -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do
   sleep 1; done
 - kubectl get pods
+- docker run -v /usr/local/bin:/hostbin munnerz/ubuntu-nsenter cp /nsenter /hostbin/nsenter
 - curl -Lo helm.tar.gz https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
 - tar -zxvf helm.tar.gz
 - chmod +x linux-amd64/helm
