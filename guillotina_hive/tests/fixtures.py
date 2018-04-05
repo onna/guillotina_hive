@@ -54,11 +54,14 @@ def db():
         yield
     else:
         import pytest_docker_fixtures
-        pytest_docker_fixtures.containers.pg.Postgresql.port = 5433
         if DATABASE == 'cockroachdb':
             host, port = pytest_docker_fixtures.cockroach_image.run()
         else:
-            host, port = pytest_docker_fixtures.pg_image.run()
+            pg_image = pytest_docker_fixtures.pg_image
+            pg_image.port = 5433
+            pg_image.base_image_options['publish_all_ports'] = False
+            pg_image.base_image_options['ports'] = {'5432/tcp': 5433}
+            host, port = pg_image.run()
             import psycopg2
             try:
                 conn = psycopg2.connect(
