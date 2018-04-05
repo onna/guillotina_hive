@@ -1,12 +1,13 @@
 import logging
 import os
 
-from aioclustermanager.tests.utils import get_k8s_config
 import docker
-from guillotina import testing
-from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
-from guillotina.tests import fixtures
 import pytest
+
+from aioclustermanager.tests.utils import get_k8s_config
+from guillotina import testing
+from guillotina.tests import fixtures
+from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
 
 IMAGE_NAME = 'hive_test_image'
 
@@ -44,6 +45,7 @@ logger = logging.getLogger('guillotina_hive')
 BUILDED_IMAGE = False
 
 DATABASE = os.environ.get('DATABASE', 'DUMMY')
+
 
 @pytest.fixture(scope='session')
 def db():
@@ -83,8 +85,9 @@ def db():
 
         if DATABASE == 'cockroachdb':
             pytest_docker_fixtures.cockroach_image.stop()
-        elif not IS_TRAVIS:
+        elif:
             pytest_docker_fixtures.pg_image.stop()
+
 
 fixtures.db = db
 

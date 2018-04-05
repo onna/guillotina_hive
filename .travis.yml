@@ -44,6 +44,7 @@ before_script:
   do sleep 1; done
 - sleep 10
 - kubectl get pods --all-namespaces
+- export MYIP="$(/sbin/ip route|awk '/default/ { print $3 }')"
 - docker build -t hive_test_image .
 script:
 - flake8 guillotina_hive
