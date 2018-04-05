@@ -54,6 +54,7 @@ def db():
         yield
     else:
         import pytest_docker_fixtures
+        pytest_docker_fixtures.containers.pg.Postgresql.port = 5433
         if DATABASE == 'cockroachdb':
             host, port = pytest_docker_fixtures.cockroach_image.run()
         else:
