@@ -76,8 +76,8 @@ def db():
                 pass
 
         # mark the function with the actual host
-        setattr(get_db_settings, 'host', host)
-        setattr(get_db_settings, 'port', port)
+        setattr(fixtures.get_db_settings, 'host', host)
+        setattr(fixtures.get_db_settings, 'port', port)
 
         yield host, port  # provide the fixture value
 
