@@ -85,7 +85,7 @@ def db():
 
         if DATABASE == 'cockroachdb':
             pytest_docker_fixtures.cockroach_image.stop()
-        elif:
+        else:
             pytest_docker_fixtures.pg_image.stop()
 
 
