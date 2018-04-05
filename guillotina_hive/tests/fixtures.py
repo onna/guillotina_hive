@@ -1,9 +1,11 @@
 import logging
 import os
 
+from aioclustermanager.tests.utils import get_k8s_config
+
 import docker
 import pytest
-from aioclustermanager.tests.utils import get_k8s_config
+
 from guillotina import testing
 from guillotina.tests import fixtures
 from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
