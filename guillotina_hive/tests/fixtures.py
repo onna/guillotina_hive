@@ -1,13 +1,14 @@
 import logging
 import os
 
-import docker
-import pytest
-
 from aioclustermanager.tests.utils import get_k8s_config
 from guillotina import testing
 from guillotina.tests import fixtures
 from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
+
+import docker
+import pytest
+
 
 IMAGE_NAME = 'hive_test_image'
 
