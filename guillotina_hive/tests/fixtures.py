@@ -43,6 +43,8 @@ logger = logging.getLogger('guillotina_hive')
 
 BUILDED_IMAGE = False
 
+DATABASE = os.environ.get('DATABASE', 'DUMMY')
+
 @pytest.fixture(scope='session')
 def db():
     """
