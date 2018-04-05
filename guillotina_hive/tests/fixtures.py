@@ -62,7 +62,11 @@ def db():
             pg_image = pytest_docker_fixtures.pg_image
             pg_image.port = 5433
             pg_image.base_image_options['publish_all_ports'] = False
-            pg_image.base_image_options['ports'] = {'5432/tcp': 5433}
+            if 'MYIP' in os.environ:
+                myip = os.environ['MYIP']
+                pg_image.base_image_options['ports'] = {'5432/tcp': (myip, 5433)}
+            else:
+                pg_image.base_image_options['ports'] = {'5432/tcp': 5433}
             host, port = pg_image.run()
             import psycopg2
             try:
