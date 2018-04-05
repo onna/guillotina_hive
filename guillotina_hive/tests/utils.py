@@ -51,8 +51,8 @@ async def reconfigure_db(hive, task):
         new_dsn = db_config['db']['dsn'].replace('localhost', nodes[0].hostname)
     else:
         myip = os.environ['MYIP']
-        import socket
-        myip = socket.gethostbyname(nodes[0].hostname)
+        # import socket
+        # myip = socket.gethostbyname(nodes[0].hostname)
         new_dsn = db_config['db']['dsn'].replace('localhost', myip)
     # else:
     #     new_dsn = db_config['db']['dsn'].replace('localhost', '10.0.2.2')

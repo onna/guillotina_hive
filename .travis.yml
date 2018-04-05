@@ -31,7 +31,6 @@ before_script:
 - tar -zxvf helm.tar.gz
 - chmod +x linux-amd64/helm
 - sudo mv linux-amd64/helm /usr/local/bin
-- docker run -v /usr/local/bin:/hostbin munnerz/ubuntu-nsenter cp /nsenter /hostbin/nsenter
 - helm init
 - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}';
   until kubectl get deploy -n kube-system -o jsonpath="$JSONPATH" 2>&1 | grep -q "tiller-deploy:Available=True";
@@ -46,7 +45,7 @@ before_script:
   do sleep 1; done
 - sleep 10
 - kubectl get pods --all-namespaces
-- export MYIP="$(/sbin/ip route|awk '/default/ { print $3 }')"
+- export MYIP="$(ifconfig | grep eth0 -o2 | grep inet | cut -f 2 | cut -d " " -f 2)"
 - docker build -t hive_test_image .
 script:
 - flake8 guillotina_hive
