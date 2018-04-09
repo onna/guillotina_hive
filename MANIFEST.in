@@ -1,4 +1,2 @@
-include *.json
 include *.rst
-include Makefile
-include buildout.cfg
+include VERSION
