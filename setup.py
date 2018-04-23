@@ -34,7 +34,8 @@ setup(
         'setuptools',
         'guillotina>=2.1.0',
         'async_timeout',
-        'aioclustermanager'
+        'aioclustermanager',
+        'psycopg2'
     ],
     extras_require={
         'test': [
@@ -43,7 +44,9 @@ setup(
             'backoff',
             'pytest-asyncio',
             'pytest-aiohttp',
-            'pytest-cov'
+            'pytest-cov',
+            'pytest-docker-fixtures',
+            'guillotina_elasticsearch'
         ]
     }
 )

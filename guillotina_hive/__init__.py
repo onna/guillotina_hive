@@ -1,6 +1,4 @@
 from guillotina import configure
-from guillotina_hive import patches  # noqa
-from guillotina_hive import content  # noqa
 
 
 app_settings = {
@@ -10,9 +8,10 @@ app_settings = {
     "hive_tasks": {
     },
     "hive": {
-        "default_max_workers": 2,
+        "image": None,
         "namespace": "hive",
         "orchestrator": "k8s",
+        "cluster_config": {},
         "guillotina_default": {
             "entrypoint": None,
             "volumes": None,
@@ -30,6 +29,7 @@ configure.grant(
 
 
 def includeme(root):
+    configure.scan('guillotina_hive.content')
     configure.scan('guillotina_hive.client')
     configure.scan('guillotina_hive.install')
     configure.scan('guillotina_hive.permissions')

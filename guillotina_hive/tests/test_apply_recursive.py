@@ -28,7 +28,7 @@ apply_function.__name__ = 'apply_function'
 
 async def test_apply_recursive(command_arguments, hive_requester):
     async with hive_requester as requester:
-        resp, status = await requester(
+        _, status = await requester(
             'POST',
             '/db/guillotina/',
             data=json.dumps({
@@ -38,7 +38,7 @@ async def test_apply_recursive(command_arguments, hive_requester):
             })
         )
         assert status == 201
-        resp, status = await requester(
+        _, status = await requester(
             'POST',
             '/db/guillotina/folder',
             data=json.dumps({

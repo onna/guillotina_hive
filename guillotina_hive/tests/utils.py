@@ -1,12 +1,13 @@
+from guillotina.component import get_utility
+from guillotina.interfaces import ICatalogUtility
+from guillotina.tests.utils import ContainerRequesterAsyncContextManager
+from guillotina_hive.utils import GuillotinaConfigJSONEncoder
+
 import asyncio
 import base64
 import json
 import os
 
-from guillotina.component import get_utility
-from guillotina.interfaces import ICatalogUtility
-from guillotina.tests.utils import ContainerRequesterAsyncContextManager
-from guillotina_hive.utils import GuillotinaConfigJSONEncoder
 
 IS_TRAVIS = 'TRAVIS' in os.environ
 
@@ -26,9 +27,9 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
     async def __aenter__(self):
         try:
             await super().__aenter__()
-        except:  # noqa
+        except Exception:  # noqa
             pass
-        resp, status = await self.requester(
+        _, status = await self.requester(
             'POST',
             '/db/guillotina/@addons',
             data=json.dumps({
@@ -38,10 +39,10 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
         assert status == 200
         return self.requester
 
-    async def __aexit__(self, *args):
+    async def __aexit__(self, exc_type, exc, tb):
         for task in asyncio.Task.all_tasks():
             task._log_destroy_pending = False
-        return await super().__aexit__(*args)
+        return await super().__aexit__(exc_type, exc, tb)
 
 
 async def reconfigure_db(hive, task):

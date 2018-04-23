@@ -1,4 +1,13 @@
 {
   "applications": ["guillotina_hive"],
+  "databases": {
+    "db": {
+      "storage": "postgresql",
+      "dsn": "postgresql://postgres@localhost:5432"
+    }
+  },
+  "root_user": {
+    "password": "root"
+  },
   "utilities": []
 }

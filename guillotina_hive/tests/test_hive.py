@@ -30,7 +30,7 @@ async def test_add_task_hive_non_persist(hive_requester_k8s):
                 "number_two": 2}
         })
         await reconfigure_db(hive, task)
-        await hive.run_task_object(task)
+        await hive.run_task(task)
         job = await hive.get_task_status(task.name)
         assert isinstance(job, Job)
         while job.finished is False:
@@ -39,16 +39,26 @@ async def test_add_task_hive_non_persist(hive_requester_k8s):
                 log = await hive.get_task_log(task.name)
                 print('NEW LOG')
                 print(log)
-            except:
+            except Exception:
                 pass
 
             job = await hive.get_task_status(task.name)
-        executions = await hive.get_task_executions(task.name)
-        print(executions.statuses())
-        log = await hive.get_task_log(task.name)
-        print(log)
-        assert executions.is_done()
-        assert '4.0000' in log
+
+        tries = 0
+        while tries < 5:
+            executions = await hive.get_task_executions(task.name)
+            print(executions.statuses())
+            log = await hive.get_task_log(task.name)
+            print(log)
+            try:
+                assert executions.is_done()
+                assert '4.0000' in log
+                await asyncio.sleep(2)
+                break
+            except AssertionError:
+                if tries > 4:
+                    raise
+                tries += 1
 
 
 async def test_add_task_hive_function_non_persist(hive_requester_k8s):
@@ -68,7 +78,7 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
         assert task.container_args == ["guillotina", "hive-worker"]
         assert task.envs['PAYLOAD'] is not None
         await reconfigure_db(hive, task)
-        await hive.run_task_object(task)
+        await hive.run_task(task)
         job = await hive.get_task_status(task.name)
         assert isinstance(job, Job)
         while job.finished is False:
@@ -102,7 +112,7 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
             "_command": ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
         }, base_image=hive.image)
 
-        await hive.run_task_object(task)
+        await hive.run_task(task)
 
         job = await hive.get_task_status(task.name)
         assert isinstance(job, Job)
