@@ -1,14 +1,11 @@
-import logging
-import os
-
 from aioclustermanager.tests.utils import get_k8s_config
-
-import docker
-
 from guillotina import testing
 from guillotina.tests import fixtures
 from guillotina_hive.tests.utils import HiveRequesterAsyncContextManager
 
+import docker
+import logging
+import os
 import pytest
 
 
@@ -33,10 +30,9 @@ def base_settings_configurator(settings):
         'compute': 'guillotina_hive.tests.tasks.compute'
     })
     settings['hive'] = {
-        "image": local_hive_image(),
+        "default_image": local_hive_image(),
         "orchestrator": "k8s",
-        "namespace": "hivetest",
-        "master": True,
+        "default_namespace": "hivetest",
         "cluster_config": get_k8s_config()
     }
 
@@ -53,6 +49,7 @@ DATABASE = os.environ.get('DATABASE', 'DUMMY')
 @pytest.fixture(scope='session')
 def db():
     """
+    XXX OVERRIDE db fixture in guillotina
     detect travis, use travis's postgres; otherwise, use docker
     """
     if DATABASE == 'DUMMY':
@@ -77,7 +74,7 @@ def db():
                 cur.fetchone()
                 cur.close()
                 conn.close()
-            except:  # noqa
+            except Exception:  # noqa
                 pass
 
         # mark the function with the actual host

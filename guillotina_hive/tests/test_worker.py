@@ -59,7 +59,7 @@ async def test_run_task_uri_noresult(command_arguments, hive_requester):
         assert status == 201
 
         command_arguments.task_id = '/db/guillotina/+tasks/calculate-numbers/' + \
-            resp['__name__']
+            resp['@name']
         command_arguments.tags = []
         wc = WorkerCommand(command_arguments)
         result = await wc.run(command_arguments, app_settings, None)
@@ -92,7 +92,7 @@ async def test_run_task_uri_result(command_arguments, hive_requester):
 
         assert status == 201
 
-        command_arguments.task_id = '/db/guillotina/+tasks/local-memory/' + resp['__name__']  # noqa
+        command_arguments.task_id = '/db/guillotina/+tasks/local-memory/' + resp['@name']  # noqa
         command_arguments.tags = []
         wc = WorkerCommand(command_arguments)
         TESTING_OBJECT['value'] == 0

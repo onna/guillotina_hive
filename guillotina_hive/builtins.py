@@ -4,16 +4,20 @@ from guillotina.component import getUtility
 from guillotina.interfaces import ICatalogUtility
 from guillotina.interfaces import IFolder
 from guillotina.security.policy import Interaction
+from guillotina.transactions import get_tm
+from guillotina.transactions import get_transaction
 from guillotina.traversal import traverse
 from guillotina.utils import apply_coroutine
 from guillotina.utils import resolve_dotted_name
+from guillotina_hive.decorators import hive_task
+
+
 try:
     from guillotina_elasticsearch.migration import Migrator
     from guillotina_elasticsearch.reindex import Reindexer
 except ImportError:
     Migrator = None
     Reindexer = None
-from guillotina_hive.decorators import hive_task
 
 
 @hive_task(name='es-reindex')
@@ -33,8 +37,10 @@ async def es_reindex(path, root, request, reindex_security=False):
             log_details=True)
         await reindexer.reindex(ob)
     finally:
-        if request._txn is not None:
-            await request._tm.abort(txn=request._txn)
+        txn = get_transaction(request)
+        if txn is not None:
+            tm = get_tm(request)
+            await tm.abort(txn=txn)
 
 
 @hive_task(name='es-migrate')
@@ -56,8 +62,10 @@ async def es_migrate(path, root, request, reindex_security=False,
             log_details=True)
         await migrator.run_migration()
     finally:
-        if request._txn is not None:
-            await request._tm.abort(txn=request._txn)
+        txn = get_transaction(request)
+        if txn is not None:
+            tm = get_tm(request)
+            await tm.abort(txn=txn)
 
 
 async def _apply_recursive(ob, function, count=0):
@@ -91,7 +99,7 @@ def login_user(request, user_data):
 
 @hive_task(name='apply-recursive')
 async def apply_recursive(path, user_data, root, request, function,
-                          commit=False, args=[], kwargs={}):
+                          commit=False, args=None, kwargs=None):
     '''
     Required options in task data are:
         - path: base path to start using apply on
@@ -101,6 +109,10 @@ async def apply_recursive(path, user_data, root, request, function,
         - args: []
         - kwargs: {}
     '''
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
     try:
         login_user(request, user_data)
         ob, end_path = await traverse(request, root, path.lstrip('/').split('/'))
@@ -111,17 +123,19 @@ async def apply_recursive(path, user_data, root, request, function,
             *args,
             **kwargs)
     finally:
-        if request._txn is not None:
+        txn = get_transaction(request)
+        if txn is not None:
+            tm = get_tm(request)
             if commit:
-                await request._tm.commit(txn=request._txn)
+                await tm.commit(txn=txn)
             else:
-                await request._tm.abort(txn=request._txn)
+                await tm.abort(txn=txn)
     return result
 
 
 @hive_task(name='apply-object')
 async def apply_object(path, user_data, root, request, function,
-                       commit=False, args=[], kwargs={}):
+                       commit=False, args=None, kwargs=None):
     '''
     Required options in task data are:
         - path: base path to start using apply on
@@ -131,6 +145,10 @@ async def apply_object(path, user_data, root, request, function,
         - args: []
         - kwargs: {}
     '''
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
     path = path
     try:
         login_user(request, user_data)
@@ -142,8 +160,10 @@ async def apply_object(path, user_data, root, request, function,
             *args,
             **kwargs)
     finally:
-        if request._txn is not None:
+        txn = get_transaction(request)
+        if txn is not None:
+            tm = get_tm(request)
             if commit:
-                await request._tm.commit(txn=request._txn)
+                await tm.commit(txn=txn)
             else:
-                await request._tm.abort(txn=request._txn)
+                await tm.abort(txn=txn)

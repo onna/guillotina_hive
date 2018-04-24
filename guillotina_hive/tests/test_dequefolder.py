@@ -60,5 +60,6 @@ async def test_dequeuefolder(hive_requester):
             '/db/guillotina/+tasks/calculate-numbers/@ids'
         )
         assert status == 200
-        assert len(resp) == 2
+        assert len(resp) == 1
         assert 'execution1' not in resp
+        assert 'execution2' not in resp

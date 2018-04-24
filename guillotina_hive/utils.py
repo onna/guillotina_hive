@@ -1,5 +1,3 @@
-import json
-
 from datetime import datetime
 from guillotina.component import get_utility
 from guillotina.interfaces.security import PermissionSetting
@@ -8,6 +6,8 @@ from guillotina.utils import get_current_request
 from guillotina.utils import get_dotted_name
 from guillotina_hive.interfaces import IHiveClientUtility
 from zope.interface.interface import InterfaceClass
+
+import json
 
 
 def get_full_content_path(request, ob):
@@ -45,7 +45,11 @@ class GuillotinaConfigJSONEncoder(json.JSONEncoder):
 
 
 async def _create_apply_task(name, ob, function, request=None, commit=False,
-                             args=[], kwargs={}):
+                             args=None, kwargs=None):
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
     from guillotina_hive.model.task import Task
 
     if request is None:
@@ -88,23 +92,3 @@ async def add_object_task(*args, **kwargs):
     task_info = await _create_apply_task('apply-object', *args, **kwargs)
     await hive.add_task(task_info)
     return task_info
-
-
-# def create_task_request(task):
-#     if task.request_url is None:
-#         request = get_mocked_request()
-#         request._db_write_enabled = True
-#         return request
-
-#     parsed_url = urlparse(task.request_url)
-#     request = get_mocked_request(path=parsed_url.path)
-#     request._db_write_enabled = True
-#     request._cache.clear()
-#     request.headers.update({
-#         'HOST': parsed_url.netloc
-#     })
-#     request._rel_url = yarl.URL(parsed_url.path)
-#     for key, value in task.request_headers.items():
-#         request.headers[key] = value
-
-#     return request

@@ -27,6 +27,7 @@ TASK_SCHEMA = {
         'args': {'type': 'object'},
         'persistent': {'type': 'boolean'},
         'guillotina': {'type': 'boolean'},
+        '_namespace': {'type': 'string'},
         '_envs': {'type': 'object'},
         '_image': {'type': 'string'},
         '_command': {'type': 'array'},
@@ -38,6 +39,14 @@ TASK_SCHEMA = {
 
 
 class Task(object):
+    name = function = None
+    args = {}
+    persistent = False
+    guillotina = True
+    _namespace = _command = _image = task_uri = None
+    _container_args = {}
+    _cpu_limit = _mem_limit = 0.0
+    _envs = {}
 
     def __init__(self, data=None, base_image=None):
         if data is not None:
@@ -62,10 +71,10 @@ class Task(object):
 
     def serialize(self):
         result = {}
-        for key in TASK_SCHEMA['properties'].keys():
+        for key in TASK_SCHEMA['properties']:
             result[key] = getattr(self, key, None)
         jsonschema.validate(result, TASK_SCHEMA)
-        return ujson.dumps(result)
+        return ujson.dumps(result)  # pylint: disable=I1101
 
     async def run(self, request, tags, root):
         # Look for the function that we want to execute
@@ -81,17 +90,17 @@ class Task(object):
         try:
             # Check the defined function exist
             if isinstance(self.function, dict):
-                logger.warn('Running : ' + self.function['name'])
+                logger.warning(f'Running : {self.function["name"]}')
                 func = self.function['klass']
             else:
-                logger.warn('Running : ' + self.function)
+                logger.warning(f'Running : {self.function}')
                 func = resolve_dotted_name(self.function)
         except ModuleNotFoundError:
             raise NoTaskFunctionFoundError(self.name)
         except ValueError:
             raise NoTaskFunctionFoundError(self.name)
 
-        logger.warning('Running task {}({})'.format(self.name, self.task_uri))
+        logger.warning(f'Running task {self.name}({self.task_uri})')
 
         if asyncio.iscoroutinefunction(func):
             # Its an async function
@@ -165,7 +174,7 @@ class Task(object):
                 ).encode('utf-8')).decode('utf-8')
 
             try:
-                import guillotina_elasticsearch  # noqa
+                import guillotina_elasticsearch  # noqa pylint: disable=W0612
                 if 'elasticsearch' in app_settings:
                     es_config = app_settings['elasticsearch']
                     result['ES_CONFIG'] = base64.b64encode(
@@ -178,7 +187,7 @@ class Task(object):
                 pass
 
             try:
-                import guillotina_redis  # noqa
+                import guillotina_redis  # noqa pylint: disable=W0612
                 if 'redis' in app_settings:
                     redis_config = app_settings['redis']
                     result['REDIS_CONFIG'] = base64.b64encode(
@@ -191,7 +200,7 @@ class Task(object):
                 pass
 
             for util in app_settings['utilities']:
-                if util['provides'] == 'guillotina_gcloudstorage.interfaces.IGCloudBlobStore':  # noqa
+                if util['provides'] == 'guillotina_gcloudstorage.interfaces.IGCloudBlobStore':  # noqa pylint: disable=C0301
                     result['GCLOUD_CONFIG'] = base64.b64encode(
                         json.dumps(
                             util['settings'],
@@ -214,8 +223,7 @@ class Task(object):
     def image(self):
         if self._image == "":
             return self._base_image
-        else:
-            return self._image
+        return self._image
 
     @property
     def volumes(self):
@@ -236,3 +244,7 @@ class Task(object):
     def entrypoint(self):
         if self.guillotina:
             return app_settings['hive']['guillotina_default']['entrypoint']
+
+    @property
+    def namespace(self):
+        return self._namespace
