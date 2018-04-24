@@ -1,6 +1,6 @@
 
 
-1.0.3 (Unreleased)
+1.0.3 (2018-04-24)
 ------------------
 
 - fix to work with guillotina 3
