@@ -69,9 +69,11 @@ class WorkerCommand(Command):
                 self.request._txn = txn = await tm.begin(self.request)
                 container_obj = await db_obj.async_get(elements[1])
                 if IContainer.providedBy(container_obj):
-                    guillotina_execution = await navigate_to(container_obj, '/'.join(elements[2:]))  # noqa pylint: disable=C0301
+                    guillotina_execution = await navigate_to(
+                        container_obj, '/'.join(elements[2:]))
                     if IExecution.providedBy(guillotina_execution):
-                        task_obj = TaskObject(data=guillotina_execution.get_task_payload())  # noqa pylint: disable=C0301
+                        task_obj = TaskObject(
+                            data=guillotina_execution.get_task_payload())
                 await tm.abort(txn=txn)
         elif payload_config is True:
             task_obj = TaskObject(data=task)

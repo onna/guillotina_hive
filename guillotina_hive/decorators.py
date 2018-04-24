@@ -8,6 +8,8 @@ def load_hive_task(_context, task):
     }
 
     settings.update(task['config'])
+    if 'hive_tasks' not in app_settings:
+        app_settings['hive_tasks'] = {}
     app_settings['hive_tasks'][task['config']['name']] = settings
 
 

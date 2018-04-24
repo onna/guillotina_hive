@@ -29,8 +29,9 @@ def base_settings_configurator(settings):
         'local-memory': 'guillotina_hive.tests.tasks.local_memory',
         'compute': 'guillotina_hive.tests.tasks.compute'
     })
+    image = get_local_hive_image()
     settings['hive'] = {
-        "default_image": local_hive_image(),
+        "default_image": image,
         "orchestrator": "k8s",
         "default_namespace": "hivetest",
         "cluster_config": get_k8s_config()
@@ -92,8 +93,7 @@ def db():
 fixtures.db = db
 
 
-@pytest.fixture(scope='function')
-def local_hive_image():
+def get_local_hive_image():
     global BUILDED_IMAGE
     if 'TEST_HIVE_IMAGE' not in os.environ:
         if BUILDED_IMAGE is False:
@@ -116,5 +116,5 @@ async def hive_requester(elasticsearch, guillotina, loop):
 
 
 @pytest.fixture(scope='function')
-async def hive_requester_k8s(k8s_config, elasticsearch, guillotina, local_hive_image, loop):
+async def hive_requester_k8s(k8s_config, elasticsearch, guillotina, loop):
     return HiveRequesterAsyncContextManager(guillotina, loop)

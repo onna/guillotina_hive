@@ -3,7 +3,8 @@
 1.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix working with decorators
+  [vangheem]
 
 
 1.0.3 (2018-04-24)
