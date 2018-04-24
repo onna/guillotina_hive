@@ -31,7 +31,8 @@ Example here with json::
             "volumes": None,
             "volumeMounts": None,
             "envFrom": None
-        }
+        },
+        'quota': None
     }
 
 
@@ -43,6 +44,7 @@ Settings explained
 - orchestrator: k8s or nomad
 - cluster_config: what to configure aioclustermanager with
 - guillotina_default: default configuration for guillotina jobs
+- quota: define quote on cluster namespace
 
 
 Defining a job

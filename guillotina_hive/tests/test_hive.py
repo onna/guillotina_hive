@@ -116,6 +116,7 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
 
         job = await hive.get_task_status(task.name)
         assert isinstance(job, Job)
+        import pdb; pdb.set_trace()
         while job.finished is False:
             await asyncio.sleep(10)
             try:

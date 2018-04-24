@@ -17,7 +17,8 @@ app_settings = {
             "volumes": None,
             "volumeMounts": None,
             "envFrom": None
-        }
+        },
+        'quota': None
     }
 }
 

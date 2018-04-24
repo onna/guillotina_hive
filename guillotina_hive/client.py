@@ -55,6 +55,7 @@ class HiveClientUtility:
         self._orchestrator = self._settings.get('orchestrator', 'k8s')
         self._cluster_environment = self._settings.get(
             'cluster_config', config)
+        self._quota = self._settings.get('quota', None)
         if len(self._cluster_environment.keys()) > 0:
             await self.config()
 
@@ -74,7 +75,17 @@ class HiveClientUtility:
 
         await self.cm.create_namespace(self.default_namespace)
 
+        if self._quota:
+            await self.set_quota(
+                self.default_namespace, self._quota['memory'],
+                self._quota['cpu'])
+
         self._initialized = True
+
+    async def set_quota(self, ns, memory, cpu):
+        memory = "%dM" % memory
+        cpu = "%dm" % cpu
+        await self.cm.define_quota(ns, cpu_limit=cpu, mem_limit=memory)
 
     async def finalize(self):
         if self._initialized:
