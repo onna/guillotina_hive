@@ -51,7 +51,7 @@ class HiveClientUtility:
         self._master = self._settings.get('master', False)
         self._default_image = self._settings.get('default_image', image)
 
-        self._default_namespace = self._settings.get('default_namespace', 'hive-')
+        self._default_namespace = self._settings.get('default_namespace', 'hive')
         self._orchestrator = self._settings.get('orchestrator', 'k8s')
         self._cluster_environment = self._settings.get(
             'cluster_config', config)

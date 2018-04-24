@@ -9,7 +9,7 @@ app_settings = {
     },
     "hive": {
         "image": None,
-        "namespace": "hive",
+        "default_namespace": "hive",
         "orchestrator": "k8s",
         "cluster_config": {},
         "guillotina_default": {
