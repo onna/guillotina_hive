@@ -2,12 +2,9 @@
 from setuptools import find_packages
 from setuptools import setup
 
-with open('VERSION', 'r') as f:
-    VERSION = f.read().strip('\n')
-
 setup(
     name='guillotina_hive',
-    version=VERSION,
+    version=open('VERSION').read().strip(),
     description='Guillotina addon to split actions into smaller bits',  # noqa
     long_description=(open('README.rst').read() + '\n' +
                       open('CHANGELOG.rst').read()),
