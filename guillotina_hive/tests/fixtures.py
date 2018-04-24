@@ -30,10 +30,9 @@ def base_settings_configurator(settings):
         'compute': 'guillotina_hive.tests.tasks.compute'
     })
     settings['hive'] = {
-        "image": local_hive_image(),
+        "default_image": local_hive_image(),
         "orchestrator": "k8s",
-        "namespace": "hivetest",
-        "master": True,
+        "default_namespace": "hivetest",
         "cluster_config": get_k8s_config()
     }
 

@@ -72,6 +72,8 @@ class HiveClientUtility:
             self._cluster_manager = ClusterManager(
                 await self._context_manager.open())
 
+        await self.cm.create_namespace(self.default_namespace)
+
         self._initialized = True
 
     async def finalize(self):

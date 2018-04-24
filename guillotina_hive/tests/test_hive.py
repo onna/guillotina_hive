@@ -74,7 +74,7 @@ async def test_add_task_hive_function_non_persist(hive_requester_k8s):
             "args": {
                 "number_one": 2,
                 "number_two": 2}
-        }, base_image=hive.image)
+        }, base_image=hive.default_image)
         assert task.container_args == ["guillotina", "hive-worker"]
         assert task.envs['PAYLOAD'] is not None
         await reconfigure_db(hive, task)
@@ -110,7 +110,7 @@ async def test_add_task_nonhive_non_persist(hive_requester_k8s):
             "name": "perl-task",
             "image": "perl",
             "_command": ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"]
-        }, base_image=hive.image)
+        }, base_image=hive.default_image)
 
         await hive.run_task(task)
 
