@@ -3,7 +3,8 @@
 1.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- improve user login for apply tasks
+  [vangheem]
 
 
 1.0.4 (2018-04-24)

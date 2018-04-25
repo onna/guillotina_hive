@@ -44,8 +44,8 @@ class GuillotinaConfigJSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-async def _create_apply_task(name, ob, function, request=None, commit=False,
-                             args=None, kwargs=None):
+def create_apply_task(name, ob, function, request=None, commit=False,
+                      args=None, kwargs=None):
     if args is None:
         args = []
     if kwargs is None:
@@ -59,9 +59,13 @@ async def _create_apply_task(name, ob, function, request=None, commit=False,
     try:
         participation = request.security.participations[0]
         user = participation.principal
-        user_data['id'] = user.id
-        user_data['roles'] = user.roles
-        user_data['groups'] = user.groups
+        user_data = {
+            'id': user.id,
+            'roles': user.roles,
+            'groups': user.groups,
+            'Authorization': request.headers.get('Authorization'),
+            'data': getattr(user, 'data', {})
+        }
     except (AttributeError, IndexError):
         pass
 
@@ -82,13 +86,13 @@ async def _create_apply_task(name, ob, function, request=None, commit=False,
 
 async def add_apply_recursive_task(*args, **kwargs):
     hive = get_utility(IHiveClientUtility)
-    task_info = await _create_apply_task('apply-recursive', *args, **kwargs)
-    await hive.add_task(task_info)
+    task_info = create_apply_task('apply-recursive', *args, **kwargs)
+    await hive.run_task(task_info)
     return task_info
 
 
 async def add_object_task(*args, **kwargs):
     hive = get_utility(IHiveClientUtility)
-    task_info = await _create_apply_task('apply-object', *args, **kwargs)
-    await hive.add_task(task_info)
+    task_info = create_apply_task('apply-object', *args, **kwargs)
+    await hive.run_task(task_info)
     return task_info

@@ -4,7 +4,7 @@ from guillotina import app_settings
 from guillotina.tests.utils import get_mocked_request
 from guillotina.tests.utils import get_root
 from guillotina_hive.commands.worker import WorkerCommand
-from guillotina_hive.utils import _create_apply_task
+from guillotina_hive.utils import create_apply_task
 
 
 class ElephantApply:
@@ -57,7 +57,7 @@ async def test_apply_recursive(command_arguments, hive_requester):
 
         # now do it with tasks...
         apply_function.__class__.__name__ = 'apply_function'  # to dump func
-        task = await _create_apply_task(
+        task = await create_apply_task(
             'apply-recursive', container, apply_function, request)
 
         command_arguments.payload = task.serialize()

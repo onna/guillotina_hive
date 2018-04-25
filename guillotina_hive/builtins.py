@@ -1,7 +1,5 @@
 from guillotina.auth.participation import GuillotinaParticipation
 from guillotina.auth.users import GuillotinaUser
-from guillotina.component import getUtility
-from guillotina.interfaces import ICatalogUtility
 from guillotina.interfaces import IFolder
 from guillotina.security.policy import Interaction
 from guillotina.transactions import get_tm
@@ -89,12 +87,15 @@ def login_user(request, user_data):
         user.id = user_data['id']
         user._groups = user_data.get('groups', [])
         user._roles = user_data.get('roles', [])
+        user.data = user_data.get('data', {})
         participation.principal = user
         request._cache_user = user
 
     request.security.add(participation)
     request.security.invalidate_cache()
     request._cache_groups = {}
+    if user_data.get('Authorization'):
+        request.headers['Authorization'] = user_data['Authorization']
 
 
 @hive_task(name='apply-recursive')
