@@ -1,6 +1,6 @@
 
 
-1.0.5 (unreleased)
+1.0.5 (2018-04-25)
 ------------------
 
 - improve user login for apply tasks
