@@ -1,5 +1,7 @@
 from guillotina.auth.participation import GuillotinaParticipation
 from guillotina.auth.users import GuillotinaUser
+from guillotina.component import getUtility
+from guillotina.interfaces import ICatalogUtility
 from guillotina.interfaces import IFolder
 from guillotina.security.policy import Interaction
 from guillotina.transactions import get_tm

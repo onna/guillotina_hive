@@ -3,7 +3,8 @@
 1.0.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix release
+  [vangheem]
 
 
 1.0.5 (2018-04-25)
