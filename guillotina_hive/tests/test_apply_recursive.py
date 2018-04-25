@@ -57,7 +57,7 @@ async def test_apply_recursive(command_arguments, hive_requester):
 
         # now do it with tasks...
         apply_function.__class__.__name__ = 'apply_function'  # to dump func
-        task = await create_apply_task(
+        task = create_apply_task(
             'apply-recursive', container, apply_function, request)
 
         command_arguments.payload = task.serialize()
