@@ -1,5 +1,5 @@
 
-1.0.9 (unreleased)
+1.0.9 (2018-04-26)
 ------------------
 
 - apply builtin tasks setup request object url as well
