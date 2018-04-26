@@ -107,7 +107,6 @@ def login_user(request, user_data):
 def setup_request(request, user_data):
     if 'container_url' in user_data and getattr(request, '_db_id', None):
         container_url = user_data['container_url']
-        print(container_url)
         parsed_url = urlparse(container_url)
         request._cache.clear()
         if 'https' in container_url:

@@ -2,7 +2,8 @@
 1.0.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Remove print
+  [vangheem]
 
 
 1.0.9 (2018-04-26)
