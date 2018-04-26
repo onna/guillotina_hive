@@ -1,5 +1,6 @@
 from guillotina.auth.participation import GuillotinaParticipation
 from guillotina.auth.users import GuillotinaUser
+from guillotina.browser import get_physical_path
 from guillotina.component import getUtility
 from guillotina.interfaces import ICatalogUtility
 from guillotina.interfaces import IFolder
@@ -10,6 +11,9 @@ from guillotina.traversal import traverse
 from guillotina.utils import apply_coroutine
 from guillotina.utils import resolve_dotted_name
 from guillotina_hive.decorators import hive_task
+from urllib.parse import urlparse
+
+import yarl
 
 
 try:
@@ -100,6 +104,24 @@ def login_user(request, user_data):
         request.headers['Authorization'] = user_data['Authorization']
 
 
+def setup_request(request, user_data):
+    if 'container_url' in user_data and getattr(request, '_db_id', None):
+        container_url = user_data['container_url']
+        print(container_url)
+        parsed_url = urlparse(container_url)
+        request._cache.clear()
+        if 'https' in container_url:
+            request._secure_proxy_ssl_header = ('FORCE_SSL', 'true')
+            request.headers['FORCE_SSL'] = 'true'
+        request.headers.update({
+            'HOST': parsed_url.hostname,
+            'X-VirtualHost-Monster': container_url.replace(
+                request._db_id + '/'.join(get_physical_path(request.container)), ''
+            )
+        })
+        request._rel_url = yarl.URL(yarl.URL(container_url).path)
+
+
 @hive_task(name='apply-recursive')
 async def apply_recursive(path, user_data, root, request, function,
                           commit=False, args=None, kwargs=None):
@@ -120,6 +142,7 @@ async def apply_recursive(path, user_data, root, request, function,
         login_user(request, user_data)
         ob, end_path = await traverse(request, root, path.lstrip('/').split('/'))
         assert len(end_path) == 0
+        setup_request(request, user_data)
         function = resolve_dotted_name(function)
         result = await _apply_recursive(
             ob, function,
@@ -157,6 +180,7 @@ async def apply_object(path, user_data, root, request, function,
         login_user(request, user_data)
         ob, end_path = await traverse(request, root, path.lstrip('/').split('/'))
         assert len(end_path) == 0
+        setup_request(request, user_data)
         function = resolve_dotted_name(function)
         return await apply_coroutine(
             function, ob,

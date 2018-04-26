@@ -1,5 +1,6 @@
 from datetime import datetime
 from guillotina.component import get_utility
+from guillotina.interfaces import IAbsoluteURL
 from guillotina.interfaces.security import PermissionSetting
 from guillotina.utils import get_content_path
 from guillotina.utils import get_current_request
@@ -68,6 +69,9 @@ def create_apply_task(name, ob, function, request=None, commit=False,
         }
     except (AttributeError, IndexError):
         pass
+
+    if request.container:
+        user_data['container_url'] = IAbsoluteURL(request.container, request)()
 
     task_info = Task(data={
         "name": name,

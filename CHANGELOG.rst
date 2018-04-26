@@ -2,7 +2,8 @@
 1.0.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- apply builtin tasks setup request object url as well
+  [vangheem]
 
 
 1.0.7 (2018-04-25)
