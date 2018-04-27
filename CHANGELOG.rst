@@ -1,7 +1,8 @@
-1.0.11 (unreleased)
+1.0.11 (2018-04-27)
 -------------------
 
-- Nothing changed yet.
+- Updating aioclustermanager dependency
+  [ramon]
 
 
 1.0.10 (2018-04-26)
