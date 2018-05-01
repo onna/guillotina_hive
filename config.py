@@ -1,6 +1,5 @@
 # Basic script to define the guillotina_hive configuration to connect to
 # external services
-# We assume there is a DB_CONFIG env var with a configuration to generate
 
 import os
 import json

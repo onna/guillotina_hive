@@ -47,7 +47,8 @@ class HiveRequesterAsyncContextManager(ContainerRequesterAsyncContextManager):
 
 async def reconfigure_db(hive, task):
     nodes = await hive.cm.get_nodes()
-    db_config = json.loads(base64.b64decode(task.envs['DB_CONFIG']))
+    settings = base64.b64decode(task.envs['APP_SETTINGS'])
+    db_config = json.loads(settings)['databases'][0]
     if not IS_TRAVIS:
         new_dsn = db_config['db']['dsn'].replace('localhost', nodes[0].hostname)
     else:
@@ -58,9 +59,11 @@ async def reconfigure_db(hive, task):
     # else:
     #     new_dsn = db_config['db']['dsn'].replace('localhost', '10.0.2.2')
     db_config['db']['dsn'] = new_dsn
-    task._envs['DB_CONFIG'] = base64.b64encode(
+    task._envs['APP_SETTINGS'] = base64.b64encode(
         json.dumps(
-            db_config,
+            {
+                "databases": [db_config]
+            },
             cls=GuillotinaConfigJSONEncoder,
             ensure_ascii=False
         ).encode('utf-8')).decode('utf-8')
