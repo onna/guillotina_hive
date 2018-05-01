@@ -56,8 +56,13 @@ class HiveClientUtility:
         self._cluster_environment = self._settings.get(
             'cluster_config', config)
         self._quota = self._settings.get('quota', None)
-        if len(self._cluster_environment.keys()) > 0:
-            await self.config()
+        try:
+            if len(self._cluster_environment.keys()) > 0:
+                await self.config()
+        except Exception:
+            logger.warning('Error initializing cluster', exc_info=True)
+        finally:
+            self._initialized = True
 
     async def config(self):
         # we need cluster context manager
@@ -79,8 +84,6 @@ class HiveClientUtility:
             await self.set_quota(
                 self.default_namespace, self._quota['memory'],
                 self._quota['cpu'])
-
-        self._initialized = True
 
     async def set_quota(self, ns, memory, cpu):
         memory = "%dM" % memory
@@ -107,7 +110,7 @@ class HiveClientUtility:
     async def run_task(self, task: TaskObject):
         await self.cm.create_job(
             self.get_task_ns(task),  # namespace
-            task.name,  # jobid
+            task.id,  # jobid
             self.get_task_image(task),  # image
             command=task.command,
             args=task.container_args,

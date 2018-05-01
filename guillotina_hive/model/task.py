@@ -1,8 +1,3 @@
-import asyncio
-import base64
-import json
-import logging
-
 from guillotina import app_settings
 from guillotina.utils import lazy_apply
 from guillotina.utils import resolve_dotted_name
@@ -10,8 +5,14 @@ from guillotina_hive.exceptions import NoTaskFunctionFoundError
 from guillotina_hive.exceptions import NoTaskFunctionValidError
 from guillotina_hive.utils import GuillotinaConfigJSONEncoder
 
+import asyncio
+import base64
+import json
 import jsonschema
+import logging
 import ujson
+import uuid
+
 
 logger = logging.getLogger('guillotina_hive')
 
@@ -22,6 +23,7 @@ TASK_SCHEMA = {
         'name': {
             'type': 'string',
             'pattern': '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'},
+        'id': {'type': 'string'},
         'task_uri': {'type': 'string'},
         'function': {'type': 'string'},
         'args': {'type': 'object'},
@@ -38,8 +40,8 @@ TASK_SCHEMA = {
 }
 
 
-class Task(object):
-    name = function = None
+class Task:
+    name = id = function = None
     args = {}
     persistent = False
     guillotina = True
@@ -68,6 +70,8 @@ class Task(object):
             self._base_image = base_image
         else:
             self._base_image = None
+        if not self.id:
+            self.id = self.name + uuid.uuid4().hex[:6]
 
     def serialize(self):
         result = {}
@@ -126,7 +130,7 @@ class Task(object):
     @property
     def container_args(self):
         if len(self._container_args) == 0:
-            return ["guillotina", "hive-worker"]
+            return app_settings['hive']['guillotina_default']['container_args']
         else:
             return [
                 "--%s%s" % (
@@ -164,56 +168,15 @@ class Task(object):
             }
 
         if self.guillotina:
-            # Its a guillotina job so we need to copy vars
-            db_config = app_settings['databases']
-            result['DB_CONFIG'] = base64.b64encode(
+            serializer = resolve_dotted_name(
+                app_settings['hive']['settings_serializer'])
+            settings = serializer()
+            result['APP_SETTINGS'] = base64.b64encode(
                 json.dumps(
-                    db_config,
+                    settings,
                     cls=GuillotinaConfigJSONEncoder,
                     ensure_ascii=False
                 ).encode('utf-8')).decode('utf-8')
-
-            try:
-                import guillotina_elasticsearch  # noqa pylint: disable=W0612
-                if 'elasticsearch' in app_settings:
-                    es_config = app_settings['elasticsearch']
-                    result['ES_CONFIG'] = base64.b64encode(
-                        json.dumps(
-                            es_config,
-                            cls=GuillotinaConfigJSONEncoder,
-                            ensure_ascii=False
-                        ).encode('utf-8')).decode('utf-8')
-            except ImportError:
-                pass
-
-            try:
-                import guillotina_redis  # noqa pylint: disable=W0612
-                if 'redis' in app_settings:
-                    redis_config = app_settings['redis']
-                    result['REDIS_CONFIG'] = base64.b64encode(
-                        json.dumps(
-                            redis_config,
-                            cls=GuillotinaConfigJSONEncoder,
-                            ensure_ascii=False
-                        ).encode('utf-8')).decode('utf-8')
-            except ImportError:
-                pass
-
-            for util in app_settings['utilities']:
-                if util['provides'] == 'guillotina_gcloudstorage.interfaces.IGCloudBlobStore':  # noqa pylint: disable=C0301
-                    result['GCLOUD_CONFIG'] = base64.b64encode(
-                        json.dumps(
-                            util['settings'],
-                            cls=GuillotinaConfigJSONEncoder,
-                            ensure_ascii=False
-                        ).encode('utf-8')).decode('utf-8')
-                if util['provides'] == 'guillotina_s3storage.interfaces.IS3BlobStore':  # noqa
-                    result['S3_CONFIG'] = base64.b64encode(
-                        json.dumps(
-                            util['settings'],
-                            cls=GuillotinaConfigJSONEncoder,
-                            ensure_ascii=False
-                        ).encode('utf-8')).decode('utf-8')
 
         if len(self._envs.keys()) > 0:
             result.update(self._envs)
