@@ -1,4 +1,5 @@
 from datetime import datetime
+from guillotina import app_settings
 from guillotina.component import get_utility
 from guillotina.interfaces import IAbsoluteURL
 from guillotina.interfaces.security import PermissionSetting
@@ -46,7 +47,9 @@ class GuillotinaConfigJSONEncoder(json.JSONEncoder):
 
 
 def create_apply_task(name, ob, function, request=None, commit=False,
-                      args=None, kwargs=None):
+                      args=None, kwargs=None, task_config=None):
+    if task_config is None:
+        task_config = {}
     if args is None:
         args = []
     if kwargs is None:
@@ -73,7 +76,7 @@ def create_apply_task(name, ob, function, request=None, commit=False,
     if request.container:
         user_data['container_url'] = IAbsoluteURL(request.container, request)()
 
-    task_info = Task(data={
+    data = {
         "name": name,
         "guillotina": True,
         "args": {
@@ -84,7 +87,9 @@ def create_apply_task(name, ob, function, request=None, commit=False,
             'kwargs': kwargs,
             'user_data': user_data
         }
-    })
+    }
+    data.update(task_config)
+    task_info = Task(data=data)
     return task_info
 
 
@@ -100,3 +105,14 @@ async def add_object_task(*args, **kwargs):
     task_info = create_apply_task('apply-object', *args, **kwargs)
     await hive.run_task(task_info)
     return task_info
+
+
+def settings_serializer():
+    settings = {}
+
+    for key in ('elasticsearch', 'redis', 'root_user', 'applications',
+                'databases', 'hive', 'utilities'):
+        if key in app_settings:
+            settings[key] = app_settings[key]
+
+    return settings

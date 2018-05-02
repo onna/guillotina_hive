@@ -1,14 +1,17 @@
 1.0.12 (unreleased)
 -------------------
 
-- Nothing changed
+- job name should not be the id we give it
+  [vangheem]
+
+- Be able to customize default container args
+  [vangheem]
 
 1.0.11 (2018-04-27)
 -------------------
 
 - Updating aioclustermanager dependency
   [ramon]
-
 
 1.0.10 (2018-04-26)
 -------------------

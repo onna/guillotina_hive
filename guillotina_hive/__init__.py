@@ -16,9 +16,11 @@ app_settings = {
             "entrypoint": None,
             "volumes": None,
             "volumeMounts": None,
-            "envFrom": None
+            "envFrom": None,
+            "container_args": ["guillotina", "hive-worker"]
         },
-        'quota': None
+        'quota': None,
+        'settings_serializer': 'guillotina_hive.utils.settings_serializer'
     }
 }
 
