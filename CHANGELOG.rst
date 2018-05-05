@@ -1,4 +1,4 @@
-1.0.12 (unreleased)
+1.0.12 (2018-05-05)
 -------------------
 
 - job name should not be the id we give it
