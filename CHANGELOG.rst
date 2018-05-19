@@ -1,4 +1,4 @@
-1.0.13 (unreleased)
+1.0.13 (2018-05-19)
 -------------------
 
 - Do not log cancelled errors on init
