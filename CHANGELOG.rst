@@ -1,7 +1,8 @@
 1.0.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Do not log cancelled errors on init
+  [vangheem]
 
 
 1.0.12 (2018-05-05)

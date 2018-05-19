@@ -59,6 +59,8 @@ class HiveClientUtility:
         try:
             if len(self._cluster_environment.keys()) > 0:
                 await self.config()
+        except asyncio.CancelledError:
+            pass
         except Exception:
             logger.warning('Error initializing cluster', exc_info=True)
         finally:
