@@ -1,4 +1,4 @@
-1.0.14 (unreleased)
+1.0.14 (2018-05-19)
 -------------------
 
 - upgrade guillotina in reqs
