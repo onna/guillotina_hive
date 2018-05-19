@@ -1,4 +1,4 @@
-1.0.15 (unreleased)
+1.0.15 (2018-05-19)
 -------------------
 
 - Downgrade guillotina test requirements
